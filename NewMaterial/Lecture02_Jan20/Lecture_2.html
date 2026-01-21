@@ -237,17 +237,22 @@
         y_0 \\ y_1 \\ \vdots \\ y_{n-1}
         \end{bmatrix}$$</p>
 
-        <p><strong>Step 2 (Vandermonde Determinant):</strong> The matrix \(V\) is the <strong>Vandermonde matrix</strong>. We prove its determinant is:
+        <p><strong>Step 2 (Vandermonde Determinant):</strong> The matrix \(V\) is the <strong>Vandermonde matrix</strong>. A standard result from linear algebra states:
         $$\det(V) = \prod_{0 \leq i < j \leq n-1} (x_j - x_i)$$
         
-        <em>Proof by induction:</em>
-        <ul>
-            <li><strong>Base case (\(n=1\)):</strong> \(V = [1]\) has \(\det(V) = 1\), and the product over empty set is 1. ✓</li>
-            <li><strong>Base case (\(n=2\)):</strong> \(V = \begin{bmatrix} 1 & x_0 \\ 1 & x_1 \end{bmatrix}\) has \(\det(V) = x_1 - x_0\). ✓</li>
-            <li><strong>Inductive step:</strong> Assume the formula holds for \((n-1) \times (n-1)\) Vandermonde matrices. For the \(n \times n\) case:
-                <ol>
-                    <li>View \(\det(V)\) as a polynomial in \(x_{n-1}\) (the last variable). It has degree at most \(n-1\).</li>
-                    <li>If \(x_{n-1} = x_i\) for any \(i < n-1\), then two rows of \(V\) are identical, so \(\det(V) = 0\). Thus \((x_{n-1} - x_i)\) is a factor for each \(i = 0, \ldots, n-2\).</li>
+        Since all \(x_i\) are distinct, each factor \((x_j - x_i) \neq 0\), so \(\det(V) \neq 0\) and \(V\) is invertible.</p>
+                    <li>Since \(\det(V)\) has degree \(n-1\) in \(x_{n-1}\) and has \(n-1\) roots, we can write:
+                        $$\det(V) = C \prod_{i=0}^{n-2} (x_{n-1} - x_i)$$
+                        for some constant \(C\) (which may depend on \(x_0, \ldots, x_{n-2}\)).</li>
+                    <li>To find \(C\), look at the coefficient of \(x_{n-1}^{n-1}\) in \(\det(V)\). By cofactor expansion along the last row, this coefficient comes from the \((n-1) \times (n-1)\) Vandermonde minor obtained by deleting the last row and column, which by induction has determinant:
+                        $$C = \prod_{0 \leq i < j \leq n-2} (x_j - x_i)$$</li>
+                    <li>Combining gives the full formula. □</li>
+                </ol>
+            </li>
+        </ul>
+        
+        Since all \(x_i\) are distinct, \(\det(V) \neq 0\), so \(V\) is invertible.</p>
+
                     <li>Since \(\det(V)\) has degree \(n-1\) in \(x_{n-1}\) and has \(n-1\) roots, we can write:
                         $$\det(V) = C \prod_{i=0}^{n-2} (x_{n-1} - x_i)$$
                         for some constant \(C\) (which may depend on \(x_0, \ldots, x_{n-2}\)).</li>
@@ -290,54 +295,60 @@
         The polynomial has degree at most \(n-1\) and satisfies all interpolation conditions, so by uniqueness, this is the interpolating polynomial. □</p>
     </div>
 
-    <h3>2.3 Convergence via Partition of Unity</h3>
+    <h3>2.3 Convergence on Uniform Grids via Partition of Unity</h3>
 
-    <p>The partition of unity property provides an elegant way to analyze the convergence of Lagrange interpolation for smooth functions.</p>
+    <p>Using the partition of unity property, we can prove that Lagrange interpolation on uniform grids converges to smooth functions as the grid is refined.</p>
 
     <div class="theorem-box">
-        <strong>Theorem (Error Bound via Taylor Series and POU):</strong> Let \(f \in C^{n+1}[a,b]\) be \((n+1)\)-times continuously differentiable, and let \(p(x)\) be the Lagrange interpolating polynomial through nodes \(\{x_0, \ldots, x_n\}\) with spacing \(h = \max_j |x_{j+1} - x_j|\). Then for any \(x \in [a,b]\):
-        $$|f(x) - p(x)| \leq \frac{\|f^{(n+1)}\|_\infty}{(n+1)!} h^{n+1} \sum_{j=0}^{n} |x - x_j|^{n+1} |\ell_j(x)|$$
+        <strong>Theorem (Interpolation Error on Uniform Grids):</strong> For a smooth function \(f\) and Lagrange interpolant \(p(x)\) using \(n+1\) uniform nodes with spacing \(h\):
+        $$|f(x) - p(x)| = O(h^{n+1})$$
 
-        <p><em>Proof:</em> The Lagrange interpolant is:
+        as \(h \to 0\), provided \(f\) has \(n+1\) continuous derivatives.
+
+        <p><em>Proof idea:</em> Start with the Taylor expansion of \(f(x_j)\) about any point \(x\):
+        $$f(x_j) = f(x) + f'(x)(x_j - x) + \frac{f''(x)}{2}(x_j - x)^2 + \cdots + \frac{f^{(n+1)}(\xi_j)}{(n+1)!}(x_j - x)^{n+1}$$
+
+        The Lagrange interpolant is:
         $$p(x) = \sum_{j=0}^{n} f(x_j) \ell_j(x)$$
 
-        Expand \(f(x_j)\) in Taylor series about \(x\):
-        $$f(x_j) = \sum_{k=0}^{n} \frac{f^{(k)}(x)}{k!}(x_j - x)^k + \frac{f^{(n+1)}(\xi_j)}{(n+1)!}(x_j - x)^{n+1}$$
+        Substituting the Taylor expansion:
+        $$p(x) = \sum_{j=0}^{n} \left[f(x) + f'(x)(x_j - x) + \cdots \right] \ell_j(x)$$
 
-        for some \(\xi_j\) between \(x\) and \(x_j\). Substitute into the interpolant:
-        $$p(x) = \sum_{j=0}^{n} \left[\sum_{k=0}^{n} \frac{f^{(k)}(x)}{k!}(x_j - x)^k + \frac{f^{(n+1)}(\xi_j)}{(n+1)!}(x_j - x)^{n+1}\right] \ell_j(x)$$
+        Distribute the sum:
+        $$p(x) = f(x) \underbrace{\sum_{j=0}^{n} \ell_j(x)}_{=1} + f'(x) \underbrace{\sum_{j=0}^{n} (x_j - x)\ell_j(x)}_{=0} + \cdots$$
 
-        Interchange summation:
-        $$p(x) = \sum_{k=0}^{n} \frac{f^{(k)}(x)}{k!} \underbrace{\sum_{j=0}^{n} (x_j - x)^k \ell_j(x)}_{m_k(x)} + \sum_{j=0}^{n} \frac{f^{(n+1)}(\xi_j)}{(n+1)!}(x_j - x)^{n+1} \ell_j(x)$$
+        <strong>Key observation:</strong> By the partition of unity property, the first sum equals 1. The higher-order sums vanish because Lagrange interpolation exactly reproduces polynomials of degree \(\leq n\). Specifically, if we interpolate the polynomial \(g(y) = (y-x)^k\) for \(k \leq n\), we get back exactly that polynomial, so evaluating at \(y=x\) gives zero:
+        $$\sum_{j=0}^{n} (x_j - x)^k \ell_j(x) = 0, \quad k = 1, 2, \ldots, n$$
 
-        <strong>Key observation:</strong> The quantities \(m_k(x) = \sum_{j=0}^{n} (x_j - x)^k \ell_j(x)\) are the \(k\)-th moments of the Lagrange basis. By the exactness property of Lagrange interpolation (it reproduces polynomials of degree \(\leq n\) exactly), we have:
-        $$m_k(x) = 0 \quad \text{for } k = 0, 1, \ldots, n$$
+        Therefore, all the polynomial terms in \(p(x)\) match \(f(x)\) exactly, leaving only the remainder:
+        $$f(x) - p(x) = -\sum_{j=0}^{n} \frac{f^{(n+1)}(\xi_j)}{(n+1)!}(x_j - x)^{n+1} \ell_j(x)$$
 
-        (This follows because interpolating \(g(y) = (y-x)^k\) gives the zero polynomial for \(k \leq n\), since all \(g(x_j) = 0\) would require all coefficients to vanish, but this only holds when the interpolant vanishes.)
+        For <strong>piecewise interpolation</strong> with fixed degree \(n\), we divide the domain into small intervals, each of width \(O(h)\). On each interval, we use \(n+1\) nodes with spacing \(h\), so \(|x_j - x| \leq nh\). Since \(n\) is fixed, \(nh = O(h)\).
 
-        Actually, \(m_0(x) = \sum_j \ell_j(x) = 1\) by POU, so only \(k=0\) survives in the leading terms. For the true function:
-        $$f(x) = f(x) \cdot 1 = f(x) \sum_{j=0}^{n} \ell_j(x)$$
+        Taking absolute values:
+        $$|f(x) - p(x)| \leq \frac{\max |f^{(n+1)}|}{(n+1)!} h^{n+1} \sum_{j=0}^{n} n^{n+1} |\ell_j(x)|$$
 
-        Therefore:
-        $$f(x) - p(x) = \sum_{j=0}^{n} \frac{f^{(n+1)}(\xi_j)}{(n+1)!}(x_j - x)^{n+1} \ell_j(x) - \sum_{k=1}^{n} \frac{f^{(k)}(x)}{k!} m_k(x)$$
-
-        For properly chosen interpolation nodes (e.g., Chebyshev), the moments \(m_k\) are bounded, yielding:
-        $$|f(x) - p(x)| \leq \frac{\|f^{(n+1)}\|_\infty}{(n+1)!} h^{n+1} C_n$$
+        The sum \(\sum_j |\ell_j(x)|\) is bounded by a constant depending only on \(n\). Therefore:
+        $$|f(x) - p(x)| = O(h^{n+1})$$
         
-        where \(C_n\) depends on the node distribution. □</p>
+        <strong>Important caveat:</strong> This analysis assumes <strong>piecewise</strong> interpolation where \(n\) is fixed and we refine by decreasing \(h\). For global interpolation over a fixed domain \([a,b]\) with \(n+1\) points, the interval width is \(nh \approx b-a = O(1)\) (constant), not \(O(h)\), and the basis functions grow exponentially with \(n\) (Runge phenomenon). □</p>
     </div>
 
     <div class="example-box">
-        <strong>Corollary (Uniform Grid Convergence):</strong> For a uniform grid with spacing \(h\) on \([a,b]\) and \(f \in C^{n+1}[a,b]\):
-        $$\|f - p\|_\infty \leq C \frac{\|f^{(n+1)}\|_\infty}{(n+1)!} h^{n+1}$$
+        <strong>Concrete Examples (Piecewise Interpolation):</strong>
 
-        where \(C\) depends on \(n\) and may grow with \(n\) (Runge phenomenon for equally-spaced nodes).
+        <p><strong>Piecewise linear (\(n=1\)):</strong> Divide domain into intervals of width \(h\). On each interval, use 2 points. The maximum distance is \(|x_j - x| \leq h\), and \(\sum_j |\ell_j(x)| \leq 2\):
+        $$|f(x) - p(x)| \leq \frac{h^2}{8} \max |f''(x)|$$
 
-        <p><strong>Special case:</strong> For piecewise linear interpolation (\(n=1\)) on a uniform grid with \(f \in C^2\):
-        $$\|f - p\|_\infty \leq \frac{h^2}{8} \|f''\|_\infty$$</p>
+        <p><strong>Piecewise quadratic (\(n=2\)):</strong> Divide domain into intervals of width \(2h\). On each interval, use 3 points with spacing \(h\). The maximum distance is \(|x_j - x| \leq 2h\), giving:
+        $$|f(x) - p(x)| = O(h^3)$$
 
-        <p><strong>Special case:</strong> For quadratic interpolation (\(n=2\)) with centered nodes and \(f \in C^3\):
-        $$\|f - p\|_\infty \leq C \frac{h^3}{6} \|f'''\|_\infty$$</p>
+        <p><strong>Strategy for accuracy:</strong>
+        <ul>
+            <li><strong>Piecewise approach:</strong> Fix \(n\) (degree), refine mesh by decreasing \(h\) → error decreases as \(O(h^{n+1})\)</li>
+            <li><strong>Global approach:</strong> Fix domain size, increase \(n\) → Runge phenomenon (error can grow!)</li>
+        </ul>
+        Finite element methods use the piecewise approach: low-degree polynomials on many small elements.</p>
     </div>
 
     <h3>2.4 Polynomial Approximation (Not Interpolation)</h3>
@@ -359,54 +370,22 @@
         
         For smooth functions \(f \in C^2[a,b]\) with \(|f''(x)| \leq M\), the convergence rate is \(O(n^{-1})\).
 
-        <p><em>Proof (Constructive via Bernstein Polynomials):</em></p>
+        <p><em>Proof idea (Bernstein Polynomials):</em></p>
 
-        <p><strong>Step 1 (Bernstein Basis):</strong> For \(f\) on \([0,1]\), define the \(n\)-th Bernstein polynomial:
+        <p><strong>Construction:</strong> For \(f\) on \([0,1]\), the \(n\)-th Bernstein polynomial is:
         $$B_n(f; x) = \sum_{k=0}^n f\left(\frac{k}{n}\right) \binom{n}{k} x^k (1-x)^{n-k}$$
-        This is a polynomial of degree \(n\). The basis functions \(b_{n,k}(x) = \binom{n}{k} x^k (1-x)^{n-k}\) are non-negative and satisfy \(\sum_{k=0}^n b_{n,k}(x) = 1\) (partition of unity from the binomial theorem).</p>
+        The basis functions \(b_{n,k}(x) = \binom{n}{k} x^k (1-x)^{n-k}\) form a partition of unity: \(\sum_{k=0}^n b_{n,k}(x) = 1\).</p>
 
-        <p><strong>Step 2 (Key Properties):</strong> The Bernstein basis satisfies:
-        <ul>
-            <li>\(\sum_{k=0}^n b_{n,k}(x) = (x + (1-x))^n = 1\) (partition of unity)</li>
-            <li>\(\sum_{k=0}^n \frac{k}{n} b_{n,k}(x) = x\) (can be verified by differentiation)</li>
-            <li>\(\sum_{k=0}^n \left(\frac{k}{n} - x\right)^2 b_{n,k}(x) \leq \frac{1}{4n}\) (variance bound, proved using the above identities)</li>
-        </ul></p>
-
-        <p><strong>Step 3 (Error Decomposition):</strong> For any \(x \in [0,1]\):
-        $$|f(x) - B_n(f; x)| = \left|\sum_{k=0}^n \left[f(x) - f\left(\frac{k}{n}\right)\right] b_{n,k}(x)\right|$$</p>
-
-        <p><strong>Step 4 (Smoothness Bound):</strong> By Taylor expansion, for \(|t - x| \leq \delta\):
-        $$\left|f(t) - f(x)\right| \leq |f'(x)||t-x| + \frac{M}{2}|t-x|^2 \leq \|f'\|_\infty \delta + \frac{M}{2}\delta^2$$</p>
-
-        <p><strong>Step 5 (Uniform Continuity):</strong> For continuous \(f\) on \([0,1]\), given \(\epsilon > 0\), there exists \(\delta > 0\) such that:
-        $$|f(x) - f(y)| < \frac{\epsilon}{2} \quad \text{whenever } |x - y| < \delta$$</p>
-
-        <p><strong>Step 6 (Split Sum):</strong> Split the sum into "close" and "far" terms:
-        $$|f(x) - B_n(f; x)| \leq \sum_{|k/n - x| < \delta} + \sum_{|k/n - x| \geq \delta}$$</p>
-
-        <p><strong>Step 7 (Close Terms):</strong> When \(|k/n - x| < \delta\), by uniform continuity:
-        $$\sum_{|k/n - x| < \delta} \left|f(x) - f\left(\frac{k}{n}\right)\right| b_{n,k}(x) < \frac{\epsilon}{2} \sum_k b_{n,k}(x) = \frac{\epsilon}{2}$$</p>
-
-        <p><strong>Step 8 (Far Terms):</strong> For \(|k/n - x| \geq \delta\):
-        $$\sum_{|k/n - x| \geq \delta} \left|f(x) - f\left(\frac{k}{n}\right)\right| b_{n,k}(x) \leq 2\|f\|_\infty \sum_{|k/n - x| \geq \delta} b_{n,k}(x)$$
+        <p><strong>Key property:</strong> The error can be written:
+        $$|f(x) - B_n(f; x)| = \left|\sum_{k=0}^n \left[f(x) - f\left(\frac{k}{n}\right)\right] b_{n,k}(x)\right|$$
         
-        To bound the sum, note that for \(|k/n - x| \geq \delta\), we have \((k/n - x)^2 \geq \delta^2\). Therefore:
-        $$\delta^2 \sum_{|k/n - x| \geq \delta} b_{n,k}(x) \leq \sum_{|k/n - x| \geq \delta} (k/n - x)^2 b_{n,k}(x) \leq \sum_{k=0}^n (k/n - x)^2 b_{n,k}(x) \leq \frac{1}{4n}$$
+        By uniform continuity, when \(|k/n - x|\) is small, \(|f(k/n) - f(x)|\) is small. The Bernstein basis has a "concentration" property: as \(n \to \infty\), most of the weight \(b_{n,k}(x)\) is concentrated near \(k/n \approx x\). This can be quantified using the variance bound:
+        $$\sum_{k=0}^n \left(\frac{k}{n} - x\right)^2 b_{n,k}(x) \leq \frac{1}{4n}$$
         
-        Thus:
-        $$\sum_{|k/n - x| \geq \delta} b_{n,k}(x) \leq \frac{1}{4n\delta^2}$$
-        
-        So the far terms contribute:
-        $$2\|f\|_\infty \cdot \frac{1}{4n\delta^2} = \frac{\|f\|_\infty}{2n\delta^2}$$</p>
-
-        <p><strong>Step 9 (Combine):</strong> Therefore:
-        $$|f(x) - B_n(f; x)| < \frac{\epsilon}{2} + \frac{\|f\|_\infty}{2n\delta^2}$$
-        Choose \(n \geq \frac{\|f\|_\infty}{\delta^2 \epsilon}\) to make the second term less than \(\epsilon/2\), giving total error \(< \epsilon\).</p>
-        
-        <p><strong>For smooth functions:</strong> If \(f \in C^2\) with \(|f''| \leq M\), we can take \(\delta = \sqrt{\epsilon/(2M)}\) from Taylor expansion, giving \(n = O(\epsilon^{-2})\). □</p>
+        Combining uniform continuity with this concentration property proves that \(B_n(f) \to f\) uniformly, with degree \(n = O(\epsilon^{-2})\) for general continuous functions. For \(C^2\) functions, the rate improves to \(n = O(\epsilon^{-1})\). □</p>
     </div>
 
-    <p><strong>Corollary:</strong> For any continuous \(f\) on \([a,b]\) and any \(\epsilon > 0\), there exists a polynomial with degree \(n = O(\epsilon^{-2})\) achieving \(\|f - p\|_\infty < \epsilon\).</p>
+    <p><strong>Takeaway:</strong> Polynomials can approximate any continuous function, but the tradeoff between degree and accuracy depends on the function's smoothness.</p>
 
     <h3>2.5 Alternative: Chebyshev Nodes for Interpolation</h3>
 
