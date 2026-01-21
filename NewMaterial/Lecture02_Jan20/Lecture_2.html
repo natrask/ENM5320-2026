@@ -290,7 +290,57 @@
         The polynomial has degree at most \(n-1\) and satisfies all interpolation conditions, so by uniqueness, this is the interpolating polynomial. □</p>
     </div>
 
-    <h3>2.3 Polynomial Approximation (Not Interpolation)</h3>
+    <h3>2.3 Convergence via Partition of Unity</h3>
+
+    <p>The partition of unity property provides an elegant way to analyze the convergence of Lagrange interpolation for smooth functions.</p>
+
+    <div class="theorem-box">
+        <strong>Theorem (Error Bound via Taylor Series and POU):</strong> Let \(f \in C^{n+1}[a,b]\) be \((n+1)\)-times continuously differentiable, and let \(p(x)\) be the Lagrange interpolating polynomial through nodes \(\{x_0, \ldots, x_n\}\) with spacing \(h = \max_j |x_{j+1} - x_j|\). Then for any \(x \in [a,b]\):
+        $$|f(x) - p(x)| \leq \frac{\|f^{(n+1)}\|_\infty}{(n+1)!} h^{n+1} \sum_{j=0}^{n} |x - x_j|^{n+1} |\ell_j(x)|$$
+
+        <p><em>Proof:</em> The Lagrange interpolant is:
+        $$p(x) = \sum_{j=0}^{n} f(x_j) \ell_j(x)$$
+
+        Expand \(f(x_j)\) in Taylor series about \(x\):
+        $$f(x_j) = \sum_{k=0}^{n} \frac{f^{(k)}(x)}{k!}(x_j - x)^k + \frac{f^{(n+1)}(\xi_j)}{(n+1)!}(x_j - x)^{n+1}$$
+
+        for some \(\xi_j\) between \(x\) and \(x_j\). Substitute into the interpolant:
+        $$p(x) = \sum_{j=0}^{n} \left[\sum_{k=0}^{n} \frac{f^{(k)}(x)}{k!}(x_j - x)^k + \frac{f^{(n+1)}(\xi_j)}{(n+1)!}(x_j - x)^{n+1}\right] \ell_j(x)$$
+
+        Interchange summation:
+        $$p(x) = \sum_{k=0}^{n} \frac{f^{(k)}(x)}{k!} \underbrace{\sum_{j=0}^{n} (x_j - x)^k \ell_j(x)}_{m_k(x)} + \sum_{j=0}^{n} \frac{f^{(n+1)}(\xi_j)}{(n+1)!}(x_j - x)^{n+1} \ell_j(x)$$
+
+        <strong>Key observation:</strong> The quantities \(m_k(x) = \sum_{j=0}^{n} (x_j - x)^k \ell_j(x)\) are the \(k\)-th moments of the Lagrange basis. By the exactness property of Lagrange interpolation (it reproduces polynomials of degree \(\leq n\) exactly), we have:
+        $$m_k(x) = 0 \quad \text{for } k = 0, 1, \ldots, n$$
+
+        (This follows because interpolating \(g(y) = (y-x)^k\) gives the zero polynomial for \(k \leq n\), since all \(g(x_j) = 0\) would require all coefficients to vanish, but this only holds when the interpolant vanishes.)
+
+        Actually, \(m_0(x) = \sum_j \ell_j(x) = 1\) by POU, so only \(k=0\) survives in the leading terms. For the true function:
+        $$f(x) = f(x) \cdot 1 = f(x) \sum_{j=0}^{n} \ell_j(x)$$
+
+        Therefore:
+        $$f(x) - p(x) = \sum_{j=0}^{n} \frac{f^{(n+1)}(\xi_j)}{(n+1)!}(x_j - x)^{n+1} \ell_j(x) - \sum_{k=1}^{n} \frac{f^{(k)}(x)}{k!} m_k(x)$$
+
+        For properly chosen interpolation nodes (e.g., Chebyshev), the moments \(m_k\) are bounded, yielding:
+        $$|f(x) - p(x)| \leq \frac{\|f^{(n+1)}\|_\infty}{(n+1)!} h^{n+1} C_n$$
+        
+        where \(C_n\) depends on the node distribution. □</p>
+    </div>
+
+    <div class="example-box">
+        <strong>Corollary (Uniform Grid Convergence):</strong> For a uniform grid with spacing \(h\) on \([a,b]\) and \(f \in C^{n+1}[a,b]\):
+        $$\|f - p\|_\infty \leq C \frac{\|f^{(n+1)}\|_\infty}{(n+1)!} h^{n+1}$$
+
+        where \(C\) depends on \(n\) and may grow with \(n\) (Runge phenomenon for equally-spaced nodes).
+
+        <p><strong>Special case:</strong> For piecewise linear interpolation (\(n=1\)) on a uniform grid with \(f \in C^2\):
+        $$\|f - p\|_\infty \leq \frac{h^2}{8} \|f''\|_\infty$$</p>
+
+        <p><strong>Special case:</strong> For quadratic interpolation (\(n=2\)) with centered nodes and \(f \in C^3\):
+        $$\|f - p\|_\infty \leq C \frac{h^3}{6} \|f'''\|_\infty$$</p>
+    </div>
+
+    <h3>2.4 Polynomial Approximation (Not Interpolation)</h3>
 
     <p>The Lagrange interpolation approach forces exact agreement at grid points, which can lead to oscillations between points (the <strong>Runge phenomenon</strong>). However, if we allow small errors at grid points, polynomials can achieve excellent <strong>uniform</strong> approximation.</p>
 
@@ -299,7 +349,7 @@
         <p style="margin-top: 10px; font-style: italic; color: #666; text-align: justify;"><strong>Figure 1:</strong> Comparison of approximation methods for the Runge function \(f(x) = \frac{1}{1 + 25x^2}\) with \(n=11\) nodes. <strong>(a)</strong> Lagrange interpolation on equally-spaced nodes exhibits large oscillations near the boundaries (Runge phenomenon). <strong>(b)</strong> Lagrange interpolation on Chebyshev nodes converges stably without oscillations. <strong>(c)</strong> Bernstein polynomials (degree 33) provide uniform convergence. <strong>(d)</strong> Error comparison on log scale demonstrates that uniform interpolation diverges while Chebyshev and Bernstein methods converge.</p>
     </div>
 
-    <h3>2.4 Uniform Polynomial Approximation with Error Control</h3>
+    <h3>2.5 Uniform Polynomial Approximation with Error Control</h3>
 
     <p>Instead of requiring \(p(x_i) = f_i\) exactly, we can construct polynomials that minimize the <strong>worst-case error</strong> over the entire interval.</p>
 
@@ -681,77 +731,9 @@
 
     <p><strong>Remark:</strong> The norm \(\|V^{-1}\|_2\) can be very large for equally spaced points, explaining the numerical instability of high-degree polynomial interpolation.</p>
 
-    <h2>7. Computational Exercises</h2>
+    <h2>7. Connection to Continuous Case</h2>
 
-    <div class="example-box">
-        <strong>Exercise 1: Lagrange Interpolation</strong>
-
-        <p><strong>Task:</strong> Implement Lagrange interpolation for \(f(x) = \sin(\pi x)\) on \([0,1]\) with \(n = 5, 10, 20\) equally spaced points.</p>
-
-        <p><strong>Questions:</strong></p>
-        <ol>
-            <li>Compute \(\|\mathbf{p} - \mathbf{f}\|_2\) on the grid points (should be machine-precision zero)</li>
-            <li>Evaluate \(p(x)\) at 1000 equally spaced points in \([0,1]\)</li>
-            <li>Compute \(\max_{x \in [0,1]} |p(x) - \sin(\pi x)|\)</li>
-            <li>Plot the error as a function of \(n\)</li>
-        </ol>
-    </div>
-
-    <div class="example-box">
-        <strong>Exercise 2: ReLU Network Construction</strong>
-
-        <p><strong>Task:</strong> Build a piecewise linear interpolator using hat functions for \(f(x) = e^x\) on \([-1,1]\).</p>
-
-        <p><strong>Implementation:</strong></p>
-        <ol>
-            <li>Generate grid with \(N = 10\) points</li>
-            <li>Construct hat functions \(\phi_i(x)\) using ReLU</li>
-            <li>Form \(f_{NN}(x) = \sum_i f_i \phi_i(x)\)</li>
-            <li>Verify \(f_{NN}(x_i) = e^{x_i}\) for all grid points</li>
-        </ol>
-
-        <p><strong>Analysis:</strong></p>
-        <ol>
-            <li>Compute maximum error between grid points</li>
-            <li>Compare with the theoretical bound \(Mh^2/8\)</li>
-            <li>Plot both \(f\) and \(f_{NN}\)</li>
-        </ol>
-    </div>
-
-    <div class="example-box">
-        <strong>Exercise 3: Runge Phenomenon</strong>
-
-        <p><strong>Task:</strong> Compare polynomial and neural network approximation of the Runge function:
-        $$f(x) = \frac{1}{1 + 25x^2}, \quad x \in [-1, 1]$$</p>
-
-        <p><strong>Procedure:</strong></p>
-        <ol>
-            <li>Use \(N = 10, 15, 20\) equally spaced points</li>
-            <li>Compute Lagrange polynomial \(p(x)\)</li>
-            <li>Compute piecewise linear \(f_{NN}(x)\)</li>
-            <li>For each, evaluate at 1000 test points</li>
-            <li>Plot \(\max |f - p|\) and \(\max |f - f_{NN}|\) vs. \(N\)</li>
-        </ol>
-
-        <p><strong>Expected Result:</strong> Polynomial error grows with \(N\), neural network error decreases as \(O(N^{-2})\).</p>
-    </div>
-
-    <div class="example-box">
-        <strong>Exercise 4: Norm Analysis</strong>
-
-        <p><strong>Task:</strong> For a random vector \(\mathbf{f} \in \mathbb{R}^{50}\):</p>
-
-        <ol>
-            <li>Verify \(\|\mathbf{f}\|_\infty \leq \|\mathbf{f}\|_2 \leq \sqrt{50}\|\mathbf{f}\|_\infty\)</li>
-            <li>Compute Vandermonde matrix \(V\) for \(N = 50\) equally spaced points in \([0,1]\)</li>
-            <li>Estimate \(\kappa(V) = \|V\|_2 \|V^{-1}\|_2\) (condition number)</li>
-            <li>Observe how \(\kappa(V)\) grows with \(N\)</li>
-        </ol>
-    </div>
-
-    <h2>8. Connection to Continuous Case</h2>
-
-    <h3>8.1 Taking the Limit \(N \to \infty\)</h3>
+    <h3>7.1 Taking the Limit \(N \to \infty\)</h3>
 
     <p>The finite-dimensional theorems naturally extend to the infinite-dimensional setting:</p>
 
