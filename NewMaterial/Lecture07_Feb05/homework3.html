@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homework 3 - ENM5320</title>
+    
+    <!-- KaTeX CSS and JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+        }
+
+        h1 {
+            color: #011F5B;  /* Penn Blue */
+            border-bottom: 3px solid #990000;  /* Penn Red */
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+
+        h2 {
+            color: #011F5B;
+            margin-top: 30px;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 5px;
+        }
+
+        h3 {
+            color: #011F5B;
+            margin-top: 20px;
+        }
+
+        p {
+            text-align: justify;
+            margin-bottom: 15px;
+        }
+
+        ul, ol {
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .katex-display {
+            margin: 1.5em 0;
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+
+        .definition {
+            background: #f8f9fa;
+            border-left: 4px solid #82AFD3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .summary-box {
+            background: #fff3cd;
+            border: 1px solid #F2C100;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .example-box {
+            background: #e8f4f8;
+            border-left: 4px solid #82AFD3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .theorem-box {
+            background: #f0f0f0;
+            border: 2px solid #011F5B;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .note-box {
+            background: #ffe6e6;
+            border-left: 4px solid #990000;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        strong {
+            color: #011F5B;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #82AFD3;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+
+        .due-date {
+            color: #990000;
+            font-size: 0.9em;
+        }
+
+        a {
+            color: #990000;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <a href="../../index.html" class="back-link">← Back to Course Schedule</a>
+    
+    <h1>Homework 3 <span class="due-date">(Due Wed. 2/25 at 11:59pm)</span></h1>
+
+    <p>In the previous assignments we have generated <em>synthetic data</em> which comes from PDEs. In class we generated a more realistic set of data that comes from post-processing a simulation of the Kelvin-Helmholtz instability. Unlike our previous exercises, we do not have any idea what sort of PDE should be satisfied for this.</p>
+
+    <p><strong>Submission.</strong> All assignments will be submitted via <a href="https://canvas.upenn.edu/courses/1912564/assignments/14471756" target="_blank">Canvas</a>. You are free to choose how to submit (scanned handwritten notes/Latex/markdown/whatever). Be sure to include Jupyter notebooks of all code written, and you may want to also submit screen shots of your code output in case we have trouble rerunning your code.</p>
+
+    <div class="note-box">
+        <strong>AI use policy:</strong> You are encouraged to use LLMs to help you explain code and to debug your own code. In order to succeed as the class gets progressively more difficult, you will however need command over how a code like this is structured. <strong>Do not</strong> just ask an LLM to complete these assignments or you will lose out on building the muscle memory needed to complete future assignments!
+    </div>
+
+    <h2>Question 1 - Load Data</h2>
+
+    <p>Make a Jupyter notebook that loads the <strong>mean of the concentration field only</strong>. Provide evidence in your notebook that you have successfully loaded the dataset (e.g., make some plots that show the correct trends). Note that the dataset has much more information (both mean and standard deviation for concentration and the vector-valued velocity field).</p>
+
+    <h2>Question 2 - Fit a Linear Stencil to the Data</h2>
+
+    <p>Adapt your code from the previous assignment to fit a stencil to this data. We are keeping the direction for this intentionally vague. In your Jupyter notebook, include in a markdown block an explanation of your training strategy.</p>
+
+    <p>Note that using a linear finite difference stencil to predict the mean of the concentration field is missing <em>a lot</em> of information. The process is nonlinear, and depends on coupling between the velocity field (where the fluid instability happens that drives mixing) and unresolved processes that are captured in the standard deviations of the fields. We will use this as a placeholder before finally moving toward a completely nonlinear description of the process in the next assignment.</p>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "\\[", right: "\\]", display: true},
+                    {left: "$", right: "$", display: false},
+                    {left: "\\(", right: "\\)", display: false}
+                ],
+                throwOnError: false
+            });
+        });
+    </script>
+</body>
+</html>
