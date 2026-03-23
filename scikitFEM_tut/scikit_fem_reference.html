@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>scikit-fem Reference Guide - ENM5320</title>
+    
+    <!-- KaTeX CSS and JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+    <!-- Highlight.js for code blocks -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+    
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+        }
+
+        h1 {
+            color: #011F5B;  /* Penn Blue */
+            border-bottom: 3px solid #990000;  /* Penn Red */
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+
+        h2 {
+            color: #011F5B;
+            margin-top: 30px;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 5px;
+        }
+
+        h3 {
+            color: #011F5B;
+            margin-top: 20px;
+        }
+
+        p {
+            text-align: justify;
+            margin-bottom: 15px;
+        }
+
+        ul, ol {
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .katex-display {
+            margin: 1.5em 0;
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+
+        .definition {
+            background: #f8f9fa;
+            border-left: 4px solid #82AFD3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .summary-box {
+            background: #fff3cd;
+            border: 1px solid #F2C100;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .example-box {
+            background: #e8f4f8;
+            border-left: 4px solid #82AFD3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .theorem-box {
+            background: #f0f0f0;
+            border: 2px solid #011F5B;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .note-box {
+            background: #ffe6e6;
+            border-left: 4px solid #990000;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        strong {
+            color: #011F5B;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #82AFD3;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+        }
+
+        .due-date {
+            color: #990000;
+            font-size: 0.9em;
+        }
+
+        a {
+            color: #990000;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 15px 0;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px 12px;
+            text-align: left;
+        }
+
+        th {
+            background: #011F5B;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="back-link">← Back to Course Schedule</a>
+    
+    <h1>scikit-fem Reference Guide for Final Projects</h1>
+
+    <div class="summary-box">
+        A curated collection of resources for students in ENM 5320 who want to use <strong>scikit-fem</strong> (and related tools) in their final projects.
+    </div>
+
+    <h2>1. Official Documentation &amp; Source</h2>
+
+    <table>
+        <tr><th>Resource</th><th>Link</th></tr>
+        <tr><td><strong>scikit-fem GitHub</strong></td><td><a href="https://github.com/kinnala/scikit-fem" target="_blank">github.com/kinnala/scikit-fem</a></td></tr>
+        <tr><td><strong>API reference</strong></td><td><a href="https://scikit-fem.readthedocs.io/en/latest/" target="_blank">scikit-fem.readthedocs.io</a></td></tr>
+        <tr><td><strong>Installation</strong></td><td><code>pip install scikit-fem</code> (pure Python, no compiled dependencies)</td></tr>
+        <tr><td><strong>Gallery of examples</strong></td><td><a href="https://github.com/kinnala/scikit-fem/tree/master/docs/examples" target="_blank">docs/examples on GitHub</a></td></tr>
+        <tr><td><strong>Supported elements</strong></td><td><a href="https://scikit-fem.readthedocs.io/en/latest/api.html#module-skfem.element" target="_blank">Element API docs</a></td></tr>
+    </table>
+
+    <p><strong>Why scikit-fem?</strong> It is a pure-Python library with minimal dependencies (NumPy + SciPy) and a clean, decorator-based API that closely mirrors the mathematical weak-form notation. This makes it ideal for rapid prototyping and educational use while still being efficient enough for moderate-scale problems.</p>
+
+    <h2>2. Core Concepts Cheat Sheet</h2>
+
+    <h3>Meshes</h3>
+    <pre><code class="language-python">from skfem import MeshTri, MeshQuad, MeshTet, MeshHex
+
+# Built-in meshes
+mesh = MeshTri.init_symmetric()         # symmetric unit square
+mesh = MeshQuad().refined(4)            # refined quad mesh
+mesh = MeshTri.init_circle()            # unit disk
+
+# Refine an existing mesh
+mesh = mesh.refined(n)                  # n uniform refinements
+
+# External meshes (via meshio/pygmsh)
+import pygmsh, meshio
+# ... see hackathon notebook for pygmsh workflow</code></pre>
+
+    <h3>Elements</h3>
+    <table>
+        <tr><th>Element</th><th>Description</th><th>Order</th></tr>
+        <tr><td><code>ElementTriP1()</code></td><td>Piecewise linear on triangles</td><td>1</td></tr>
+        <tr><td><code>ElementTriP2()</code></td><td>Piecewise quadratic on triangles</td><td>2</td></tr>
+        <tr><td><code>ElementTriP3()</code></td><td>Cubic on triangles</td><td>3</td></tr>
+        <tr><td><code>ElementQuad1()</code></td><td>Bilinear on quads</td><td>1</td></tr>
+        <tr><td><code>ElementQuad2()</code></td><td>Biquadratic on quads</td><td>2</td></tr>
+        <tr><td><code>ElementTetP1()</code></td><td>Linear on tetrahedra (3D)</td><td>1</td></tr>
+        <tr><td><code>ElementTetP2()</code></td><td>Quadratic on tetrahedra (3D)</td><td>2</td></tr>
+        <tr><td><code>ElementTriMini()</code></td><td>MINI element (Stokes)</td><td>—</td></tr>
+        <tr><td><code>ElementVector(e)</code></td><td>Vectorize any scalar element</td><td>—</td></tr>
+    </table>
+
+    <h3>Basis &amp; Assembly</h3>
+    <pre><code class="language-python">from skfem import Basis, BilinearForm, LinearForm, Functional
+from skfem.helpers import dot, grad, div, sym_grad, ddot
+
+basis = Basis(mesh, ElementTriP1())
+
+@BilinearForm
+def a(u, v, w):
+    return dot(grad(u), grad(v))
+
+@LinearForm
+def L(v, w):
+    return f(w.x[0], w.x[1]) * v
+
+K = a.assemble(basis)
+b = L.assemble(basis)</code></pre>
+
+    <h3>Boundary Conditions &amp; Solving</h3>
+    <pre><code class="language-python">from skfem import condense, solve
+
+# Homogeneous Dirichlet
+u_h = solve(*condense(K, b, D=mesh.boundary_nodes()))
+
+# Non-homogeneous Dirichlet
+u_D = np.zeros(basis.N)
+u_D[bnd] = g(mesh.p[0, bnd], mesh.p[1, bnd])
+u_h = solve(*condense(K, b, x=u_D, D=bnd))
+
+# Select specific boundaries
+left   = mesh.nodes_satisfying(lambda x: x[0] &lt; 1e-10)
+right  = mesh.nodes_satisfying(lambda x: x[0] &gt; 1.0 - 1e-10)
+circle = mesh.nodes_satisfying(lambda x: (x[0]-0.5)**2 + (x[1]-0.5)**2 &lt; 0.2**2)</code></pre>
+
+    <h2>3. Example Gallery by Application</h2>
+
+    <h3>3.1 Heat / Diffusion (Poisson-type)</h3>
+    <p>These are closest to what we did in class. Good starting points:</p>
+    <ul>
+        <li><strong>Poisson with point source:</strong> <a href="https://github.com/kinnala/scikit-fem/blob/master/docs/examples/ex01.py" target="_blank">ex01.py</a></li>
+        <li><strong>Adaptive mesh refinement (Poisson):</strong> <a href="https://github.com/kinnala/scikit-fem/blob/master/docs/examples/ex12.py" target="_blank">ex12.py</a></li>
+        <li><strong>Laplace with mixed BCs:</strong> <a href="https://github.com/kinnala/scikit-fem/blob/master/docs/examples/ex03.py" target="_blank">ex03.py</a></li>
+        <li><strong>Heat equation (time-dependent):</strong> <a href="https://github.com/kinnala/scikit-fem/blob/master/docs/examples/ex23.py" target="_blank">ex23.py</a></li>
+        <li><strong>Convection-diffusion (SUPG stabilization):</strong> <a href="https://github.com/kinnala/scikit-fem/blob/master/docs/examples/ex22.py" target="_blank">ex22.py</a></li>
+    </ul>
+
+    <h3>3.2 Fluid Mechanics</h3>
+    <ul>
+        <li><strong>Stokes flow (lid-driven cavity):</strong> <a href="https://github.com/kinnala/scikit-fem/blob/master/docs/examples/ex20.py" target="_blank">ex20.py</a> — Uses Taylor–Hood (P2/P1) elements for velocity/pressure.</li>
+        <li><strong>Navier–Stokes (steady, Picard iteration):</strong> <a href="https://github.com/kinnala/scikit-fem/blob/master/docs/examples/ex29.py" target="_blank">ex29.py</a> — Nonlinear solve via fixed-point iteration.</li>
+        <li><strong>Navier–Stokes (transient, backward Euler):</strong> <a href="https://github.com/kinnala/scikit-fem/blob/master/docs/examples/ex30.py" target="_blank">ex30.py</a></li>
+        <li><strong>Creeping flow around cylinder:</strong> <a href="https://github.com/kinnala/scikit-fem/blob/master/docs/examples/ex05.py" target="_blank">ex05.py</a></li>
+        <li><strong>Brinkman flow (porous medium):</strong> <a href="https://github.com/kinnala/scikit-fem/blob/master/docs/examples/ex35.py" target="_blank">ex35.py</a></li>
+    </ul>
+
+    <div class="example-box">
+        <strong>Key pattern for Stokes/Navier-Stokes:</strong>
+        <pre><code class="language-python">from skfem.helpers import dot, grad, div, ddot
+
+e_vel = ElementVector(ElementTriP2())     # P2 velocity
+e_pre = ElementTriP1()                     # P1 pressure
+basis = Basis(mesh, e_vel * e_pre)         # combined basis
+
+@BilinearForm
+def stokes(u, p, v, q, w):
+    return ddot(grad(u), grad(v)) - div(u) * q - div(v) * p</code></pre>
+    </div>
+
+    <h3>3.3 Solid Mechanics (Linear Elasticity)</h3>
+    <ul>
+        <li><strong>Linear elasticity (plane stress):</strong> <a href="https://github.com/kinnala/scikit-fem/blob/master/docs/examples/ex02.py" target="_blank">ex02.py</a></li>
+        <li><strong>Linear elasticity with body force:</strong> <a href="https://github.com/kinnala/scikit-fem/blob/master/docs/examples/ex10.py" target="_blank">ex10.py</a></li>
+        <li><strong>Nearly incompressible elasticity:</strong> <a href="https://github.com/kinnala/scikit-fem/blob/master/docs/examples/ex34.py" target="_blank">ex34.py</a></li>
+    </ul>
+
+    <div class="example-box">
+        <strong>Key pattern for elasticity:</strong>
+        <pre><code class="language-python">from skfem.helpers import sym_grad, ddot, eye, trace
+
+e = ElementVector(ElementTriP1())  # vector-valued P1
+basis = Basis(mesh, e)
+
+lam, mu = 1.0, 1.0   # Lamé parameters
+
+@BilinearForm
+def linear_elasticity(u, v, w):
+    eps_u = sym_grad(u)
+    eps_v = sym_grad(v)
+    return 2 * mu * ddot(eps_u, eps_v) + lam * trace(eps_u) * trace(eps_v)</code></pre>
+    </div>
+
+    <h3>3.4 Eigenvalue Problems</h3>
+    <ul>
+        <li><strong>Laplacian eigenvalues:</strong> <a href="https://github.com/kinnala/scikit-fem/blob/master/docs/examples/ex07.py" target="_blank">ex07.py</a></li>
+        <li><strong>Vibration modes of elastic body:</strong> <a href="https://github.com/kinnala/scikit-fem/blob/master/docs/examples/ex08.py" target="_blank">ex08.py</a></li>
+    </ul>
+
+    <pre><code class="language-python">from scipy.sparse.linalg import eigsh
+# Solve K @ u = lam * M @ u
+eigenvalues, eigenvectors = eigsh(K, M=M, k=6, sigma=0.0)</code></pre>
+
+    <h3>3.5 Nonlinear Problems</h3>
+    <ul>
+        <li><strong>Nonlinear minimal surface (Newton):</strong> <a href="https://github.com/kinnala/scikit-fem/blob/master/docs/examples/ex19.py" target="_blank">ex19.py</a></li>
+        <li><strong>p-Laplacian:</strong> <a href="https://github.com/kinnala/scikit-fem/blob/master/docs/examples/ex36.py" target="_blank">ex36.py</a></li>
+    </ul>
+
+    <div class="example-box">
+        <strong>Pattern: Newton's method with scikit-fem</strong>
+        <pre><code class="language-python"># At each Newton step, assemble the Jacobian J and residual F,
+# then solve J @ du = -F and update u += du
+for _ in range(max_iters):
+    J = jacobian.assemble(basis, w=basis.interpolate(u))
+    F = residual.assemble(basis, w=basis.interpolate(u))
+    du = solve(*condense(J, -F, D=boundary_dofs))
+    u += du
+    if np.linalg.norm(du) &lt; tol:
+        break</code></pre>
+    </div>
+
+    <h2>4. Mesh Generation for Complex Geometries</h2>
+
+    <h3>pygmsh (used in the hackathon)</h3>
+    <pre><code class="language-bash">pip install pygmsh meshio</code></pre>
+    <pre><code class="language-python">import pygmsh
+
+with pygmsh.occ.Geometry() as geom:
+    geom.characteristic_length_max = 0.05
+    # Combine primitives with boolean ops
+    rect = geom.add_rectangle([0, 0, 0], 1.0, 1.0)
+    hole = geom.add_disk([0.5, 0.5], 0.15)
+    geom.boolean_difference(rect, hole)
+    msh = geom.generate_mesh(dim=2)</code></pre>
+
+    <h3>dmsh (Distmesh-like, no external dependency)</h3>
+    <pre><code class="language-bash">pip install dmsh</code></pre>
+    <pre><code class="language-python">import dmsh
+geo = dmsh.Difference(dmsh.Rectangle(0, 1, 0, 1),
+                      dmsh.Circle([0.5, 0.5], 0.15))
+X, cells = dmsh.generate(geo, 0.05)
+mesh = MeshTri(X.T, cells.T)</code></pre>
+
+    <h3>Built-in scikit-fem meshes</h3>
+    <pre><code class="language-python"># Unit square, unit circle, L-shape, etc.
+mesh = MeshTri.init_symmetric()       # unit square
+mesh = MeshTri.init_circle()           # unit disk
+mesh = MeshTri.init_lshaped()          # L-shape
+mesh = MeshTri.load("path/to/file.msh")  # load from file</code></pre>
+
+    <h2>5. Post-Processing &amp; Visualization</h2>
+
+    <h3>scikit-fem built-in plotting</h3>
+    <pre><code class="language-python">from skfem.visuals.matplotlib import plot, draw
+draw(mesh)                     # wireframe
+plot(mesh, u_h, shading='gouraud')   # filled contour</code></pre>
+
+    <h3>Export to ParaView (VTK)</h3>
+    <pre><code class="language-python">from skfem.visuals.vtk import to_file
+to_file(mesh, u_h, "solution.vtk")
+# Open in ParaView for 3D interactive visualization</code></pre>
+
+    <h3>Matplotlib 3D surface</h3>
+    <pre><code class="language-python">from matplotlib.tri import Triangulation
+tri = Triangulation(mesh.p[0], mesh.p[1], mesh.t.T)
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+ax.plot_trisurf(tri, u_h, cmap='viridis')</code></pre>
+
+    <h2>6. Tips for Final Projects</h2>
+    <ol>
+        <li><strong>Start simple.</strong> Get a working solve on a coarse mesh before refining or adding complexity.</li>
+        <li><strong>Verify with manufactured solutions.</strong> As we did in the hackathon, always test convergence rates before trusting your results on problems without known solutions.</li>
+        <li><strong>Use <code>mesh.refined(n)</code> for convergence studies</strong> on built-in meshes — it's faster than re-generating via pygmsh.</li>
+        <li><strong>Mixed problems</strong> (Stokes, elasticity) use the product basis syntax: <code>Basis(mesh, e1 * e2)</code>.</li>
+        <li><strong>Time stepping</strong> is not built in — use your own time loop with backward Euler:
+            <pre><code class="language-python">M = mass.assemble(basis)
+for _ in range(nt):
+    u = solve(*condense(M + dt * K, M @ u_prev + dt * b, D=bnd))
+    u_prev = u.copy()</code></pre>
+        </li>
+        <li><strong>Performance:</strong> For large 3D problems, consider using <code>scipy.sparse.linalg.splu</code> (direct) or iterative solvers from <code>scipy.sparse.linalg</code> (CG with AMG preconditioner via <code>pyamg</code>).</li>
+        <li><strong>Combine with PyTorch:</strong> You can extract the assembled sparse matrices from scikit-fem, convert to <code>torch.sparse</code>, and use them in differentiable pipelines — relevant for neural-operator or physics-informed approaches.</li>
+    </ol>
+
+    <h2>7. Related Libraries</h2>
+    <table>
+        <tr><th>Library</th><th>Description</th><th>Link</th></tr>
+        <tr><td><strong>FEniCSx</strong></td><td>Full-featured FEM suite (more powerful, heavier)</td><td><a href="https://fenicsproject.org/" target="_blank">fenicsproject.org</a></td></tr>
+        <tr><td><strong>Firedrake</strong></td><td>Automated FEM with composable solvers</td><td><a href="https://www.firedrakeproject.org/" target="_blank">firedrakeproject.org</a></td></tr>
+        <tr><td><strong>deal.II</strong></td><td>C++ adaptive FEM library</td><td><a href="https://www.dealii.org/" target="_blank">dealii.org</a></td></tr>
+        <tr><td><strong>NGSolve</strong></td><td>High-performance FEM with Python interface</td><td><a href="https://ngsolve.org/" target="_blank">ngsolve.org</a></td></tr>
+        <tr><td><strong>PyTorch FEM</strong></td><td>Differentiable FEM in PyTorch</td><td>search GitHub for current projects</td></tr>
+    </table>
+
+    <h2>8. Recommended Reading</h2>
+    <ul>
+        <li><strong>Ern &amp; Guermond</strong>, <em>Theory and Practice of Finite Elements</em> (Springer, 2004) — the mathematical foundation behind everything in this course.</li>
+        <li><strong>Braess</strong>, <em>Finite Elements</em> (Cambridge, 2007) — concise graduate text, excellent for error analysis.</li>
+        <li><strong>Hughes</strong>, <em>The Finite Element Method</em> (Dover, 2000) — engineering perspective, strong on applications.</li>
+        <li><strong>scikit-fem paper:</strong> T. Gustafsson &amp; G. D. McBain, "scikit-fem: A Python package for finite element assembly," <em>JOSS</em>, 5(52), 2369, 2020. <a href="https://doi.org/10.21105/joss.02369" target="_blank">DOI: 10.21105/joss.02369</a></li>
+    </ul>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "\\[", right: "\\]", display: true},
+                    {left: "$", right: "$", display: false},
+                    {left: "\\(", right: "\\)", display: false}
+                ],
+                throwOnError: false
+            });
+            hljs.highlightAll();
+        });
+    </script>
+</body>
+</html>

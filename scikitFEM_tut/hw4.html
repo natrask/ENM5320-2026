@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homework 4 - ENM5320</title>
+    
+    <!-- KaTeX CSS and JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+        }
+
+        h1 {
+            color: #011F5B;  /* Penn Blue */
+            border-bottom: 3px solid #990000;  /* Penn Red */
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+
+        h2 {
+            color: #011F5B;
+            margin-top: 30px;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 5px;
+        }
+
+        h3 {
+            color: #011F5B;
+            margin-top: 20px;
+        }
+
+        p {
+            text-align: justify;
+            margin-bottom: 15px;
+        }
+
+        ul, ol {
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .katex-display {
+            margin: 1.5em 0;
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+
+        .definition {
+            background: #f8f9fa;
+            border-left: 4px solid #82AFD3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .summary-box {
+            background: #fff3cd;
+            border: 1px solid #F2C100;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .example-box {
+            background: #e8f4f8;
+            border-left: 4px solid #82AFD3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .theorem-box {
+            background: #f0f0f0;
+            border: 2px solid #011F5B;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .note-box {
+            background: #ffe6e6;
+            border-left: 4px solid #990000;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        strong {
+            color: #011F5B;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #82AFD3;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+
+        .due-date {
+            color: #990000;
+            font-size: 0.9em;
+        }
+
+        a {
+            color: #990000;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <a href="../../index.html" class="back-link">← Back to Course Schedule</a>
+    
+    <h1>Homework 4 — FEM vs PINNs <span class="due-date">(Due 4/1 by 11:59 PM)</span></h1>
+
+    <p>In this homework we will compare a solution to the Poisson equation using FEM and a physics-informed neural network. You are welcome to work with friends or to use external resources/tools. If you do, you <strong>must</strong> attribute them in your submission to comply with the UPenn academic code.</p>
+
+    <div class="note-box">
+        <strong>AI use policy:</strong> You are encouraged to use LLMs to help you explain code and to debug your own code. In order to succeed as the class gets progressively more difficult, you will however need command over how a code like this is structured. <strong>Do not</strong> just ask an LLM to complete these assignments or you will lose out on building the muscle memory needed to complete future assignments!
+    </div>
+
+    <p>Consider the Poisson equation</p>
+    $$-\nabla^2 u = f$$
+    <p>with Dirichlet boundary conditions</p>
+    $$u\big|_{\partial \Omega} = g.$$
+
+    <p>We will discretize this PDE on the unit square with a circle of radius $0.15$ removed from its center ($\Omega = [0,1]^2 \setminus B_{0.15}(0.5,0.5)$).</p>
+
+    <p>To assess the convergence of FEM and PINNs, we will use the <em>method of manufactured solutions</em> to generate a smooth solution.</p>
+
+    <h2>Question 1 — Manufactured Solution</h2>
+
+    <p>"Manufacture" a choice of $f$ and $g$ such that $u = \sin(2\pi x)\sin(2\pi y)$ solves the PDE.</p>
+
+    <h2>Question 2 — FEM Convergence</h2>
+
+    <p>Use the scikit-FEM code provided in class to solve this problem. Solve on a sequence of meshes to analyze convergence. Generate a table illustrating the $L^2$ error as a function of the maximum element size, $h$. Comment on how this compares with the FEM convergence theory we discussed in class.</p>
+
+    <h2>Question 3 — PINN Solution</h2>
+
+    <p>Generate a PINN that solves the same equation. It will be challenging to perform an apples-to-apples comparison of performance. Articulate your choices for:</p>
+
+    <ul>
+        <li>The number of collocation points</li>
+        <li>The architecture for the neural network solution, and the number of parameters</li>
+        <li>The optimizer parameters (step size and how many steps to train)</li>
+        <li>The weight between the PDE residual and the BC residual</li>
+    </ul>
+
+    <h2>Question 4 — Discussion</h2>
+
+    <p>Discuss and compare the two methods in terms of speed of solution, accuracy, and any other takeaways from the exercise that you find noteworthy.</p>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "\\[", right: "\\]", display: true},
+                    {left: "$", right: "$", display: false},
+                    {left: "\\(", right: "\\)", display: false}
+                ],
+                throwOnError: false
+            });
+        });
+    </script>
+</body>
+</html>
