@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homework 5 - ENM5320</title>
+    
+    <!-- KaTeX CSS and JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+        }
+
+        h1 {
+            color: #011F5B;
+            border-bottom: 3px solid #990000;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+
+        h2 {
+            color: #011F5B;
+            margin-top: 30px;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 5px;
+        }
+
+        h3 {
+            color: #011F5B;
+            margin-top: 20px;
+        }
+
+        p {
+            text-align: justify;
+            margin-bottom: 15px;
+        }
+
+        ul, ol {
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .katex-display {
+            margin: 1.5em 0;
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+
+        strong {
+            color: #011F5B;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #82AFD3;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        a {
+            color: #990000;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .summary-box {
+            background: #fff3cd;
+            border: 1px solid #F2C100;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        hr {
+            border: none;
+            border-top: 2px solid #e0e0e0;
+            margin: 30px 0;
+        }
+    </style>
+</head>
+<body>
+    <a href="../../index.html" class="back-link">← Back to Course Schedule</a>
+
+    <h1>Homework 5 - Due Mon. 4/13 at 11:59pm</h1>
+
+    <p>In class we built a data-driven Whitney form tutorial that learns a constitutive flux for the 1D steady advection-diffusion equation. The model decomposes the flux into a trainable linear diffusivity $\mu$ and a nonlinear neural network correction $N(\hat{u})$, and uses Newton's method to solve the resulting nonlinear system on a coarsened Whitney form discretization.</p>
+
+    <p>For this assignment, you will swap out the linear advection-diffusion data for data from the <strong>steady viscous Burgers equation</strong>, which has a genuinely nonlinear flux. This will test whether the same Whitney form architecture can discover nonlinear constitutive behavior from data.</p>
+
+    <p><strong>Submission.</strong> All assignments will be submitted via <a href="https://canvas.upenn.edu/courses/1912564/assignments" target="_blank">Canvas</a>. You are free to choose how to submit (scanned handwritten notes/Latex/markdown/whatever). Be sure to include Jupyter notebooks of all code written, and you may want to also submit screen shots of your code output in case we have trouble rerunning your code.</p>
+
+    <p><strong>AI use policy:</strong> You are encouraged to use LLMs to help you explain code and to debug your own code. In order to succeed as the class gets progressively more difficult, you will however need command over how a code like this is structured. <strong>Do not</strong> just ask an LLM to complete these assignments or you will lose out on building the muscle memory needed to complete future assignments!</p>
+
+    <hr>
+
+    <h2>Background: Steady Viscous Burgers Equation</h2>
+
+    <p>Consider the steady viscous Burgers equation on $[0,1]$:</p>
+
+    $$-\varepsilon\, u'' + u\, u' = 0$$
+
+    <p>with Dirichlet boundary conditions</p>
+
+    $$u(0) = 1, \qquad u(1) = 0.$$
+
+    <p>Unlike the advection-diffusion equation (where the advection velocity is a constant), the advection here is <strong>nonlinear</strong> — the velocity is the solution itself. This means the neural network $N(\hat{u})$ must learn a genuinely nonlinear constitutive law rather than a linear one.</p>
+
+    <h3>Deriving the exact solution</h3>
+
+    <p><strong>Step 1.</strong> Observe that $u\,u' = \frac{d}{dx}\!\left(\frac{u^2}{2}\right)$. Integrate the PDE once in $x$:</p>
+
+    $$-\varepsilon\, u' + \frac{u^2}{2} = C$$
+
+    <p>where $C$ is a constant of integration.</p>
+
+    <p><strong>Step 2.</strong> Define $a = \sqrt{2C}$ so that $u' = \frac{u^2 - a^2}{2\varepsilon}$. This is a separable ODE. Using partial fractions:</p>
+
+    $$\frac{du}{u^2 - a^2} = \frac{dx}{2\varepsilon} \qquad \Longrightarrow \qquad \frac{1}{2a}\ln\left|\frac{u - a}{u + a}\right| = \frac{x}{2\varepsilon} + K$$
+
+    <p><strong>Step 3.</strong> Exponentiate and solve for $u$:</p>
+
+    $$\frac{u - a}{u + a} = B\,e^{ax/\varepsilon}$$
+
+    <p>for some constant $B$. Solving for $u$:</p>
+
+    $$u(x) = a\,\frac{1 + B\,e^{ax/\varepsilon}}{1 - B\,e^{ax/\varepsilon}}$$
+
+    <p><strong>Step 4.</strong> Apply $u(1) = 0$: this gives $1 + B\,e^{a/\varepsilon} = 0$, so $B = -e^{-a/\varepsilon}$. Substituting:</p>
+
+    $$u(x) = a\,\frac{1 - e^{a(x-1)/\varepsilon}}{1 + e^{a(x-1)/\varepsilon}} = a\,\tanh\!\left(\frac{a(1-x)}{2\varepsilon}\right)$$
+
+    <p><strong>Step 5.</strong> Apply $u(0) = 1$: this requires</p>
+
+    $$a\,\tanh\!\left(\frac{a}{2\varepsilon}\right) = 1$$
+
+    <p>This is a transcendental equation for $a$ that must be solved numerically (e.g., via bisection or <code>scipy.optimize.brentq</code>).</p>
+
+    <h3>Summary</h3>
+
+    <div class="summary-box">
+    <p>The exact solution to the steady viscous Burgers equation with $u(0)=1$, $u(1)=0$ is:</p>
+
+    $$u(x) = a\,\tanh\!\left(\frac{a\,(1-x)}{2\varepsilon}\right)$$
+
+    <p>where $a$ solves $a\,\tanh\!\bigl(\frac{a}{2\varepsilon}\bigr) = 1$.</p>
+
+    <p>For small $\varepsilon$, $\tanh(\cdot) \approx 1$ so $a \approx 1$ and $u \approx 1$ everywhere except in a thin viscous layer near $x = 1$.</p>
+    </div>
+
+    <hr>
+
+    <h1>Question 1 — Implement the Burgers exact solution</h1>
+
+    <p>Write a function that computes the exact solution $u(x)$ for a given $\varepsilon$. You will need to:</p>
+
+    <ol>
+        <li>Solve the transcendental equation $a\,\tanh(a/(2\varepsilon)) = 1$ for $a$.</li>
+        <li>Evaluate $u(x) = a\,\tanh\bigl(a(1-x)/(2\varepsilon)\bigr)$.</li>
+    </ol>
+
+    <p>Plot the exact solution for $\varepsilon = 0.05$ and $\varepsilon = 0.5$. Comment on how the solution profile changes with $\varepsilon$ and how this compares to the advection-diffusion boundary layer.</p>
+
+    <h1>Question 2 — Swap the data in the Whitney form tutorial</h1>
+
+    <p>Starting from the <code>DataDriven_Whitney_Forms.ipynb</code> notebook, replace the advection-diffusion data with Burgers data:</p>
+
+    <ul>
+        <li>Replace the exact solution function.</li>
+        <li>Update the boundary conditions to $u(0) = 1$, $u(1) = 0$.</li>
+        <li>Keep all other architecture choices the same (mesh, Whitney forms, Newton solver, FluxNN, training loop).</li>
+    </ul>
+
+    <p>Run the training loop and report:</p>
+
+    <ol>
+        <li>The loss curve over training iterations.</li>
+        <li>The learned value of $\mu$.</li>
+        <li>A plot comparing the learned solution to the exact Burgers solution.</li>
+    </ol>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ],
+                throwOnError: false
+            });
+        });
+    </script>
+</body>
+</html>
