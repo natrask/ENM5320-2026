@@ -234,7 +234,7 @@ a:hover {
 
 .resources a {
     display: inline-block;
-    background: var(--secondary-color);
+    background: #6c757d;
     color: #fff;
     padding: 0.3rem 0.8rem;
     border-radius: 4px;
@@ -243,7 +243,7 @@ a:hover {
 }
 
 .resources a:hover {
-    background: var(--primary-color);
+    background: var(--secondary-color);
     color: #fff;
 }
 
