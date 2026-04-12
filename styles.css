@@ -233,15 +233,6 @@ a:hover {
 }
 
 .resources a {
-    color: var(--primary-color);
-    font-weight: 500;
-}
-
-.resources a:hover {
-    color: var(--secondary-color);
-}
-
-.resources a.btn {
     display: inline-block;
     background: var(--secondary-color);
     color: #fff;
@@ -251,7 +242,7 @@ a:hover {
     font-weight: 600;
 }
 
-.resources a.btn:hover {
+.resources a:hover {
     background: var(--primary-color);
     color: #fff;
 }
