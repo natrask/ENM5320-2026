@@ -121,28 +121,78 @@
 \end{frame}
 
 % ============================================================
-\begin{frame}[fragile]{Tool calling, concretely}
-  We describe each tool to the model with a JSON schema:
+\begin{frame}[fragile]{What a tool is}
+  Two pieces, written by us: an ordinary Python function, and a JSON-schema description of its signature that we hand to the model.
 
+  \vskip0.5em
+
+  \begin{columns}[T]
+  \column{0.42\textwidth}
+  \textbf{\footnotesize Python function (we call it)}
 \begin{lstlisting}
-calculator_schema = {
+def calculator(op, a, b):
+    ops = {"add": a+b, "sub": a-b,
+           "mul": a*b, "div": a/b}
+    return {"result": ops[op]}
+\end{lstlisting}
+
+  \column{0.55\textwidth}
+  \textbf{\footnotesize JSON schema (the model reads it)}
+\begin{lstlisting}
+{
   "name": "calculator",
-  "description": "Perform one arithmetic operation.",
+  "description": "One arithmetic op.",
   "parameters": {
     "type": "object",
     "properties": {
-      "op": {"type": "string", "enum": ["add","sub","mul","div"]},
+      "op": {"type": "string",
+             "enum": ["add","sub","mul","div"]},
       "a":  {"type": "number"},
       "b":  {"type": "number"},
     },
-    "required": ["op", "a", "b"],
+    "required": ["op","a","b"],
   },
 }
 \end{lstlisting}
+  \end{columns}
 
-  When the LLM wants to use it, we get back a structured
-  \texttt{function\_call} with \texttt{name="calculator"} and
-  \texttt{args=\{op:"mul", a:13, b:47\}}, instead of plain text.
+  \vskip0.4em
+
+  What each schema field controls:
+  \begin{itemize}
+    \item \texttt{name}, \texttt{description} --- whether the model picks this tool over others.
+    \item \texttt{parameters.properties} --- the typed argument list. \texttt{enum} restricts a string to a fixed set; \texttt{type} restricts to \texttt{string}/\texttt{number}/\texttt{integer}/\texttt{boolean}/\texttt{array}/\texttt{object}.
+    \item \texttt{required} --- args the model must supply (the rest are optional).
+  \end{itemize}
+\end{frame}
+
+% ============================================================
+\begin{frame}[fragile]{Tool calling: the round trip}
+  Each turn the model emits either plain text (final answer) or a structured tool call.
+
+  \vskip0.5em
+
+  \textbf{1. Model's reply contains a \texttt{function\_call} part:}
+\begin{lstlisting}
+response.candidates[0].content.parts[0].function_call
+  .name = "calculator"
+  .args = {"op": "mul", "a": 13, "b": 47}
+\end{lstlisting}
+
+  \textbf{2. We dispatch by name and run the Python function:}
+\begin{lstlisting}
+result = tool_fns[name](**args)   # = {"result": 611}
+\end{lstlisting}
+
+  \textbf{3. We send the result back as a \texttt{function\_response} on the next turn:}
+\begin{lstlisting}
+Part.from_function_response(name="calculator",
+                            response={"result": 611})
+\end{lstlisting}
+
+  \vskip0.4em
+
+  Loop: the model sees its own previous call, the result, and decides whether to call another tool or stop and return text.
 \end{frame}
 
 % ============================================================
@@ -165,6 +215,33 @@ def run_agent(system_prompt, user_prompt, tool_schemas, tool_fns,
             return response.text  # final answer
 \end{lstlisting}
   The notebook has this, fleshed out, in about 30 lines.
+\end{frame}
+
+% ============================================================
+\begin{frame}[fragile]{Two slots: \texttt{system\_prompt} vs \texttt{user\_prompt}}
+  \texttt{run\_agent} takes two prompt strings and puts them in different slots:
+
+  \vskip0.6em
+
+  \begin{itemize}
+    \item \textbf{\texttt{system\_prompt}} --- the \textit{rules of the game}. Identity, methodology, what the tools are for, budgets, how to stop. Sent on every turn as a persistent header; never gets drowned out as observations pile up.
+    \item \textbf{\texttt{user\_prompt}} --- the \textit{specific ask} that triggers this run. Becomes the first message of the conversation; tool calls and observations append after it.
+  \end{itemize}
+
+  \vskip0.6em
+
+  For example, the B1 optimization agent splits them like this:
+\begin{lstlisting}
+B1_SYSTEM = """You optimize a black-box function (angle in degrees,
+in (0, 90)) returning a range in meters. Budget: at most 12 evaluate()
+calls. Use history if helpful, then call propose_answer with your guess."""
+
+B1_USER = "Find the optimal angle. Budget: 12 evaluations."
+\end{lstlisting}
+
+  \vskip0.3em
+
+  Rule of thumb: durable rules about \textit{how to behave} go in \texttt{system\_prompt}; the specific \textit{thing to do this run} goes in \texttt{user\_prompt}.
 \end{frame}
 
 % ============================================================
@@ -287,6 +364,27 @@ except Exception as e:
   \vskip1em
 
   The gap between these two rates is the entire point of adaptive meshing on this problem. We will make the agent rediscover it.
+\end{frame}
+
+% ============================================================
+\begin{frame}{What ``adaptive refinement'' actually means}
+  \textbf{1. A local error indicator $\eta_K$.} For each element $K$, a computable proxy for how much error lives there. We use the \textit{gradient-jump indicator}:
+  \[
+    \eta_K^2 \;=\; \tfrac{1}{2}\!\sum_{e \,\in\, \partial K \cap \Omega^{\circ}} h_e \, \big| [\![\nabla u_h \cdot n_e]\!] \big|^2.
+  \]
+  P1 elements have discontinuous gradients across element edges, and the size of the jump correlates with the local error.
+
+  \vskip0.6em
+
+  \textbf{2. D\"orfler marking.} Pick a bulk fraction $\theta \in (0,1)$. Mark the smallest set of elements $\mathcal{M}$ whose squared indicators capture a fraction $\theta$ of the total:
+  \[
+    \sum_{K \in \mathcal{M}} \eta_K^2 \;\ge\; \theta \sum_{K} \eta_K^2.
+  \]
+  Refine those; leave the rest. In practice: sort elements by $\eta_K$ descending, walk down the list until the running sum hits $\theta \cdot \text{total}$, refine everything you walked past.
+
+  \vskip0.4em
+
+  \textcolor{codegray}{\small $\theta = 0.5$ is the textbook default. Smaller $\theta$ = focus on the worst offenders (slower mesh growth). Larger $\theta$ = closer to uniform refinement.}
 \end{frame}
 
 % ============================================================

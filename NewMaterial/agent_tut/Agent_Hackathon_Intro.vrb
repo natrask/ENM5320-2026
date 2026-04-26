@@ -1,0 +1,21 @@
+\frametitle{Errors are observations}
+Tool calls will sometimes fail: the model invents a nonexistent argument, asks for a mesh ID that doesn't exist, passes a string instead of a number.
+
+  \vskip0.8em
+
+  The loop wraps every dispatch in \texttt{try/except} and feeds the exception back as the tool's observation:
+
+  \vskip0.5em
+\begin{lstlisting}
+try:
+    result = tool_fns[name](**args)
+except Exception as e:
+    result = {"error": f"{type(e).__name__}: {e}"}
+\end{lstlisting}
+
+  \vskip0.5em
+
+  The model reads the error on the next turn and, with a reasonable prompt, retries with correct arguments.
+
+  \vskip0.5em
+  \textcolor{codegray}{\small In the tutorial you will see this trigger in practice. Do not treat it as a bug.}
